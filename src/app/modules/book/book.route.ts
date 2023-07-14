@@ -10,5 +10,6 @@ router.post(
   validateRequest(BookValidation.createBookZodSchema),
   BookController.createBook
 );
+router.get("/get-book", BookController.getAllBooks);
 
 export const BookRoutes = router;

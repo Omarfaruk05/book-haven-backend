@@ -1,7 +1,8 @@
 import httpStatus from "http-status";
 import ApiError from "../../../errors/ApiError";
-import { IBook } from "./book.interface";
+import { IBook, IBookFilters } from "./book.interface";
 import { Book } from "./book.model";
+import { bookSearchableFields } from "./book.constant";
 
 const createBookService = async (bookData: IBook): Promise<IBook> => {
   const isExist = await Book.findOne({
@@ -18,6 +19,58 @@ const createBookService = async (bookData: IBook): Promise<IBook> => {
   return result;
 };
 
+const getAllBooksService = async (filters: IBookFilters): Promise<IBook[]> => {
+  const { searchTerm, createdAt, ...filtersData } = filters;
+
+  const andConditions = [];
+
+  if (searchTerm) {
+    andConditions.push({
+      $or: bookSearchableFields.map((field) => ({
+        [field]: {
+          $regex: searchTerm,
+          $options: "i",
+        },
+      })),
+    });
+  }
+
+  const end = "" + (Number(createdAt) + 1);
+
+  const startYear = new Date(createdAt as string);
+  const endYear = new Date(end);
+
+  if (createdAt) {
+    andConditions.push({
+      createdAt: {
+        $gte: startYear,
+        $lt: endYear,
+      },
+    });
+  }
+
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: {
+          $regex: value,
+          $options: "i",
+        },
+      })),
+    });
+  }
+
+  console.log(filtersData, "ddd", andConditions);
+
+  const whereConditions =
+    andConditions.length > 0 ? { $and: andConditions } : {};
+
+  const result = await Book.find(whereConditions);
+
+  return result;
+};
+
 export const BookService = {
   createBookService,
+  getAllBooksService,
 };
