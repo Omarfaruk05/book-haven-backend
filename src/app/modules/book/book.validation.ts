@@ -8,7 +8,7 @@ const createBookZodSchema = z.object({
     author: z.string({
       required_error: "Author is required.",
     }),
-    authroEmail: z.string({
+    authorEmail: z.string({
       required_error: "Author email is required.",
     }),
     genre: z.string({

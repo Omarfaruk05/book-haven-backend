@@ -5,7 +5,7 @@ import httpStatus from "http-status";
 import { BookService } from "./book.service";
 
 const createBook = catchAsync(async (req: Request, res: Response) => {
-  const { bookData } = req.body;
+  const bookData = req.body;
 
   const result = await BookService.createBookService(bookData);
 
