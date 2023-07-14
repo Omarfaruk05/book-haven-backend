@@ -12,6 +12,8 @@ router.post(
 );
 router.get("/get-book", BookController.getAllBooks);
 
+router.get("/get-single-book/:id", BookController.getSingleBook);
+
 router.patch("/update-book", BookController.updateBook);
 
 export const BookRoutes = router;

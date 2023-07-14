@@ -60,12 +60,16 @@ const getAllBooksService = async (filters: IBookFilters): Promise<IBook[]> => {
     });
   }
 
-  console.log(filtersData, "ddd", andConditions);
-
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
 
   const result = await Book.find(whereConditions);
+
+  return result;
+};
+
+const getSingleBookService = async (id: string): Promise<IBook | null> => {
+  const result = await Book.findById(id);
 
   return result;
 };
@@ -76,7 +80,6 @@ const updateBookService = async (
   updatedData: Partial<IBook>
 ): Promise<IBook | null> => {
   const isExist = await Book.findOne({ _id: id, authorEmail: email });
-  console.log(isExist);
 
   if (!isExist || !email) {
     throw new ApiError(httpStatus.BAD_REQUEST, "You cant't update the book.");
@@ -87,8 +90,10 @@ const updateBookService = async (
 
   return result;
 };
+
 export const BookService = {
   createBookService,
   getAllBooksService,
+  getSingleBookService,
   updateBookService,
 };
