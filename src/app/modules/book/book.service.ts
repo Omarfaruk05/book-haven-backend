@@ -20,7 +20,7 @@ const createBookService = async (bookData: IBook): Promise<IBook> => {
 };
 
 const getAllBooksService = async (filters: IBookFilters): Promise<IBook[]> => {
-  const { searchTerm, createdAt, ...filtersData } = filters;
+  const { searchTerm, publicationTime, ...filtersData } = filters;
 
   const andConditions = [];
 
@@ -35,14 +35,14 @@ const getAllBooksService = async (filters: IBookFilters): Promise<IBook[]> => {
     });
   }
 
-  const end = "" + (Number(createdAt) + 1);
+  const end = "" + (Number(publicationTime) + 1);
 
-  const startYear = new Date(createdAt as string);
+  const startYear = new Date(publicationTime as string);
   const endYear = new Date(end);
 
-  if (createdAt) {
+  if (publicationTime) {
     andConditions.push({
-      createdAt: {
+      publicationTime: {
         $gte: startYear,
         $lt: endYear,
       },
@@ -91,7 +91,16 @@ const updateBookService = async (
   return result;
 };
 
-const deleteBookService = async (id: string): Promise<IBook | null> => {
+const deleteBookService = async (
+  id: string,
+  email: string
+): Promise<IBook | null> => {
+  const isothenticated = await Book.find({ _id: id, authorEmail: email });
+
+  if (!isothenticated || !email) {
+    throw new ApiError(httpStatus.BAD_REQUEST, " You can't delete this book.");
+  }
+
   const result = await Book.findByIdAndDelete(id);
 
   return result;

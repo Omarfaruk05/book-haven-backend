@@ -7,4 +7,5 @@ export const bookFilterableFields = [
   "authorEmail",
   "genre",
   "createdAt",
+  "publicationTime",
 ];

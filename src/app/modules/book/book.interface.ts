@@ -5,6 +5,7 @@ export type IBook = {
   author: string;
   authorEmail: string;
   genre: string;
+  publicationTime: Date;
   reviews: string[];
 };
 
@@ -16,4 +17,5 @@ export type IBookFilters = {
   author?: string;
   genre?: string;
   createdAt?: string;
+  publicationTime?: string;
 };
