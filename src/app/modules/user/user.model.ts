@@ -22,6 +22,20 @@ const userSchema = new Schema<IUser, UserModel>(
         default: [],
       },
     ],
+    reading: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Book",
+        default: [],
+      },
+    ],
+    finished: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Book",
+        default: [],
+      },
+    ],
   },
   {
     timestamps: true,

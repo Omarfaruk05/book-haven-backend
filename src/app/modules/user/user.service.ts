@@ -1,8 +1,8 @@
 import httpStatus from "http-status";
 import { User } from "./user.model";
 import ApiError from "../../../errors/ApiError";
-import { IUser } from "./user.interface";
-import { Types } from "mongoose";
+import { IUpdateResponse, IUser } from "./user.interface";
+import { Types, UpdateWriteOpResult } from "mongoose";
 
 const createUserService = async (userData: IUser): Promise<IUser> => {
   const isExist = await User.findOne({ email: userData.email });
@@ -26,23 +26,67 @@ const getUsersService = async (email: string): Promise<IUser[]> => {
 const updateUserService = async (
   email: string,
   updatedData: Partial<IUser>
-): Promise<void> => {
+): Promise<any> => {
   const isExist = await User.findOne({ email: email });
 
   if (!isExist || !email) {
     throw new ApiError(httpStatus.BAD_REQUEST, "You are not othenticated.");
   }
-  const wishlist = updatedData?.wishList;
 
-  const result = await User.updateOne(
-    { email: email },
-    { $addToSet: { wishList: { $each: wishlist } } },
-    {
-      new: true,
-    }
-  );
+  //for wish list
 
-  console.log(result);
+  if (updatedData.wishList) {
+    const wishList = updatedData.wishList;
+
+    const result = await User.updateOne(
+      { email: email },
+      {
+        $addToSet: { wishList: { $each: wishList } },
+        $pull: { reading: { $in: [wishList] }, finished: { $in: [wishList] } },
+      },
+      {
+        new: true,
+      }
+    );
+
+    return result;
+  }
+
+  // for reading
+  if (updatedData.reading) {
+    const reading = updatedData.reading;
+
+    const result = await User.updateOne(
+      { email: email },
+      {
+        $addToSet: { reading: { $each: reading } },
+        $pullAll: { wishList: reading, finished: reading },
+      },
+      {
+        new: true,
+      }
+    );
+
+    return result;
+  }
+
+  //for finished
+  if (updatedData.finished) {
+    const finished = updatedData.finished;
+
+    const result = await User.updateOne(
+      { email: email },
+      {
+        $addToSet: { finished: { $each: finished } },
+        $pullAll: { reading: finished, wishList: finished },
+      },
+      {
+        new: true,
+      }
+    );
+
+    return result;
+  }
 };
 
 export const UserService = {
