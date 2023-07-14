@@ -3,6 +3,7 @@ import { Model } from "mongoose";
 export type IBook = {
   title: string;
   author: string;
+  authorEmail: string;
   genre: string;
   reviews: string[];
 };
