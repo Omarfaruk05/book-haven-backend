@@ -70,7 +70,25 @@ const getAllBooksService = async (filters: IBookFilters): Promise<IBook[]> => {
   return result;
 };
 
+const updateBookService = async (
+  email: string,
+  id: string,
+  updatedData: Partial<IBook>
+): Promise<IBook | null> => {
+  const isExist = await Book.findOne({ _id: id, authorEmail: email });
+  console.log(isExist);
+
+  if (!isExist || !email) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You cant't update the book.");
+  }
+  const result = await Book.findOneAndUpdate({ _id: id }, updatedData, {
+    new: true,
+  });
+
+  return result;
+};
 export const BookService = {
   createBookService,
   getAllBooksService,
+  updateBookService,
 };
