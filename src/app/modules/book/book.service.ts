@@ -20,9 +20,10 @@ const createBookService = async (bookData: IBook): Promise<IBook> => {
 };
 
 const getAllBooksService = async (filters: IBookFilters): Promise<IBook[]> => {
-  const { searchTerm, publicationTime, ...filtersData } = filters;
+  const { limit, searchTerm, publicationTime, ...filtersData } = filters;
 
   const andConditions = [];
+  const limitData = limit ? limit : 100;
 
   if (searchTerm) {
     andConditions.push({
@@ -63,7 +64,9 @@ const getAllBooksService = async (filters: IBookFilters): Promise<IBook[]> => {
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
 
-  const result = await Book.find(whereConditions);
+  const result = await Book.find(whereConditions)
+    .sort({ createdAt: -1 })
+    .limit(limitData);
 
   return result;
 };

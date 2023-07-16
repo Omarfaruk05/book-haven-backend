@@ -13,6 +13,7 @@ export type IBook = {
 export type BookModel = Model<IBook, Record<string, unknown>>;
 
 export type IBookFilters = {
+  limit?: number;
   searchTerm?: string;
   title?: string;
   author?: string;
