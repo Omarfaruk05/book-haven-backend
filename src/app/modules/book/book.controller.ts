@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import { BookService } from "./book.service";
 import pick from "../../../shared/pick";
 import { bookFilterableFields } from "./book.constant";
+import { paginationFields } from "../../constants/paginationConstants";
 
 const createBook = catchAsync(async (req: Request, res: Response) => {
   const bookData = req.body;
@@ -21,7 +22,12 @@ const createBook = catchAsync(async (req: Request, res: Response) => {
 const getAllBooks = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, bookFilterableFields);
 
-  const result = await BookService.getAllBooksService(filters);
+  const paginationOptions = pick(req.query, paginationFields);
+
+  const result = await BookService.getAllBooksService(
+    filters,
+    paginationOptions
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

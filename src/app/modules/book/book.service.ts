@@ -3,6 +3,9 @@ import ApiError from "../../../errors/ApiError";
 import { IBook, IBookFilters } from "./book.interface";
 import { Book } from "./book.model";
 import { bookSearchableFields } from "./book.constant";
+import { IPaginationOptions } from "../../../interfaces/paginatin.interface";
+import { paginationHelpers } from "../../../helpers/paginationHelpers";
+import { SortOrder } from "mongoose";
 
 const createBookService = async (bookData: IBook): Promise<IBook> => {
   const isExist = await Book.findOne({
@@ -19,11 +22,13 @@ const createBookService = async (bookData: IBook): Promise<IBook> => {
   return result;
 };
 
-const getAllBooksService = async (filters: IBookFilters): Promise<IBook[]> => {
-  const { limit, searchTerm, publicationTime, ...filtersData } = filters;
+const getAllBooksService = async (
+  filters: IBookFilters,
+  paginationOptions: IPaginationOptions
+): Promise<IBook[]> => {
+  const { searchTerm, publicationTime, ...filtersData } = filters;
 
   const andConditions = [];
-  const limitData = limit ? limit : 100;
 
   if (searchTerm) {
     andConditions.push({
@@ -61,12 +66,21 @@ const getAllBooksService = async (filters: IBookFilters): Promise<IBook[]> => {
     });
   }
 
+  const { page, limit, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions);
+
+  const sortConditions: { [key: string]: SortOrder } = {};
+  if (sortBy && sortOrder) {
+    sortConditions[sortBy] = sortOrder;
+  }
+  console.log(limit);
+
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
 
   const result = await Book.find(whereConditions)
     .sort({ createdAt: -1 })
-    .limit(limitData);
+    .limit(limit);
 
   return result;
 };
