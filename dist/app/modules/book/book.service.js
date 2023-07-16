@@ -41,8 +41,9 @@ const createBookService = (bookData) => __awaiter(void 0, void 0, void 0, functi
     return result;
 });
 const getAllBooksService = (filters) => __awaiter(void 0, void 0, void 0, function* () {
-    const { searchTerm, publicationTime } = filters, filtersData = __rest(filters, ["searchTerm", "publicationTime"]);
+    const { limit, searchTerm, publicationTime } = filters, filtersData = __rest(filters, ["limit", "searchTerm", "publicationTime"]);
     const andConditions = [];
+    const limitData = limit ? limit : 100;
     if (searchTerm) {
         andConditions.push({
             $or: book_constant_1.bookSearchableFields.map((field) => ({
@@ -75,7 +76,9 @@ const getAllBooksService = (filters) => __awaiter(void 0, void 0, void 0, functi
         });
     }
     const whereConditions = andConditions.length > 0 ? { $and: andConditions } : {};
-    const result = yield book_model_1.Book.find(whereConditions);
+    const result = yield book_model_1.Book.find(whereConditions)
+        .sort({ createdAt: -1 })
+        .limit(limitData);
     return result;
 });
 const getSingleBookService = (id) => __awaiter(void 0, void 0, void 0, function* () {
