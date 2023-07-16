@@ -30,6 +30,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const book_service_1 = require("./book.service");
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const book_constant_1 = require("./book.constant");
+const paginationConstants_1 = require("../../constants/paginationConstants");
 const createBook = (0, catchAsycn_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const bookData = req.body;
     const result = yield book_service_1.BookService.createBookService(bookData);
@@ -42,7 +43,8 @@ const createBook = (0, catchAsycn_1.default)((req, res) => __awaiter(void 0, voi
 }));
 const getAllBooks = (0, catchAsycn_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filters = (0, pick_1.default)(req.query, book_constant_1.bookFilterableFields);
-    const result = yield book_service_1.BookService.getAllBooksService(filters);
+    const paginationOptions = (0, pick_1.default)(req.query, paginationConstants_1.paginationFields);
+    const result = yield book_service_1.BookService.getAllBooksService(filters, paginationOptions);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

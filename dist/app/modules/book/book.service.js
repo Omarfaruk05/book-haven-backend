@@ -28,6 +28,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const book_model_1 = require("./book.model");
 const book_constant_1 = require("./book.constant");
+const paginationHelpers_1 = require("../../../helpers/paginationHelpers");
 const createBookService = (bookData) => __awaiter(void 0, void 0, void 0, function* () {
     const isExist = yield book_model_1.Book.findOne({
         title: bookData.title,
@@ -40,10 +41,9 @@ const createBookService = (bookData) => __awaiter(void 0, void 0, void 0, functi
     const result = yield book_model_1.Book.create(bookData);
     return result;
 });
-const getAllBooksService = (filters) => __awaiter(void 0, void 0, void 0, function* () {
-    const { limit, searchTerm, publicationTime } = filters, filtersData = __rest(filters, ["limit", "searchTerm", "publicationTime"]);
+const getAllBooksService = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const { searchTerm, publicationTime } = filters, filtersData = __rest(filters, ["searchTerm", "publicationTime"]);
     const andConditions = [];
-    const limitData = limit ? limit : 100;
     if (searchTerm) {
         andConditions.push({
             $or: book_constant_1.bookSearchableFields.map((field) => ({
@@ -75,10 +75,16 @@ const getAllBooksService = (filters) => __awaiter(void 0, void 0, void 0, functi
             })),
         });
     }
+    const { page, limit, skip, sortBy, sortOrder } = paginationHelpers_1.paginationHelpers.calculatePagination(paginationOptions);
+    const sortConditions = {};
+    if (sortBy && sortOrder) {
+        sortConditions[sortBy] = sortOrder;
+    }
+    console.log(limit);
     const whereConditions = andConditions.length > 0 ? { $and: andConditions } : {};
     const result = yield book_model_1.Book.find(whereConditions)
         .sort({ createdAt: -1 })
-        .limit(limitData);
+        .limit(limit);
     return result;
 });
 const getSingleBookService = (id) => __awaiter(void 0, void 0, void 0, function* () {
