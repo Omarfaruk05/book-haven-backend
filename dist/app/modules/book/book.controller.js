@@ -64,6 +64,7 @@ const getSingleBook = (0, catchAsycn_1.default)((req, res) => __awaiter(void 0, 
 }));
 const updateBook = (0, catchAsycn_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const _a = req.body, { email, id } = _a, updatedData = __rest(_a, ["email", "id"]);
+    console.log(req.body);
     const result = yield book_service_1.BookService.updateBookService(email, id, updatedData);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,

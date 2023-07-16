@@ -52,7 +52,7 @@ const getSingleBook = catchAsync(async (req: Request, res: Response) => {
 
 const updateBook = catchAsync(async (req: Request, res: Response) => {
   const { email, id, ...updatedData } = req.body;
-
+  console.log(req.body);
   const result = await BookService.updateBookService(email, id, updatedData);
 
   sendResponse(res, {

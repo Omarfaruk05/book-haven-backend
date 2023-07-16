@@ -17,7 +17,10 @@ const createUserService = async (userData: IUser): Promise<IUser> => {
 };
 const getUsersService = async (email: string): Promise<IUser[]> => {
   console.log(email);
-  const result = await User.find({ email: email }).populate("wishList");
+  const result = await User.find({ email: email })
+    .populate("wishList")
+    .populate("reading")
+    .populate("finished");
   console.log(result);
 
   return result;
